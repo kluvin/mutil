@@ -5,40 +5,42 @@ from mutil import commands
 
 
 def mock_open(file, return_value):
+    """Mock the open filesystem call
+    Args:
+        file: The file to mock; equivalent to first arg of open()
+        return_value: The value
+    """
     from io import StringIO
     import builtins
 
     doubles.allow(builtins).open.with_args(file).and_return(StringIO(return_value))
 
 
-def test_correctly_removes_duplicates_when_present():
-    expected = ['bad/duplicated/album', 'random/good/entry']
-    expected = '\n'.join(expected)
+def to_string(content):
+    return '\n'.join(content)
 
-    duplicated = ['bad/duplicated/album', 'random/good/entry', 'bad/duplicated/album']
-    duplicated = '\n'.join(duplicated)
 
-    mock_open('./bad_playlist.m3u8', duplicated)
+def test_duplicated_playlist_behaves_as_expected():
+    my_playlist = to_string(['bad/duplicated/album', 'random/good/entry', 'bad/duplicated/album'])
+    expected_playlist = to_string(['bad/duplicated/album', 'random/good/entry'])
 
-    bad_playlist = open('./bad_playlist.m3u8')
+    mock_open('a_playlist.m3u8', my_playlist)
 
-    duplicates = commands.remove_playlist_duplicates(bad_playlist)
+    my_playlist = open('a_playlist.m3u8')
+    duplicates = commands.remove_playlist_duplicates(my_playlist)
 
-    assert bad_playlist.read() == expected
     assert duplicates == 1
+    assert my_playlist.read() == expected_playlist
 
 
-def test_does_not_modify_unduplicated_playlist():
-    expected = ['good/unduped/playlist', 'another/good/entry', 'last/entry']
-    expected = '\n'.join(expected)
-    playlist = ['good/unduped/playlist', 'another/good/entry', 'last/entry']
-    playlist = '\n'.join(playlist)
+def test_non_duplicated_playlist_behaves_as_expected():
+    my_playlist = to_string(['good/non-duped/album', 'another/good/entry', 'last/entry'])
+    expected_playlist = to_string(['good/non-duped/album', 'another/good/entry', 'last/entry'])
 
-    mock_open('./bad_playlist.m3u8', playlist)
+    mock_open('a_playlist.m3u8', my_playlist)
 
-    bad_playlist = open('./bad_playlist.m3u8')
+    my_playlist = open('a_playlist.m3u8')
+    duplicates = commands.remove_playlist_duplicates(my_playlist)
 
-    duplicates = commands.remove_playlist_duplicates(bad_playlist)
-
-    assert bad_playlist.read() == expected
     assert duplicates == 0
+    assert my_playlist.read() == expected_playlist
