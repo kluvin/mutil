@@ -12,36 +12,33 @@ def mock_open(file, return_value):
 
 
 def test_correctly_removes_duplicates_when_present():
-    mock_open('./bad_playlist.m3u8', '''bad/duplicated/album\n
-                                        random/good/entry\n
-                                        bad/duplicated/album
-                                        ''')
-    mock_open('./good_playlist.m3u8)', '''good/unduped/album\n
-                                          another/entry/here\n
-                                          can/we/have/another?
-                                          ''')
+    expected = ['bad/duplicated/album', 'random/good/entry']
+    expected = '\n'.join(expected
+                         )
+    duplicated = ['bad/duplicated/album', 'random/good/entry', 'bad/duplicated/album']
+    duplicated = '\n'.join(duplicated)
+
+    mock_open('./bad_playlist.m3u8', duplicated)
 
     bad_playlist = open('./bad_playlist.m3u8')
-    good_playlist = open('./good_playlist.m3u8')
 
-    processed_playlist = commands.remove_playlist_duplicates(bad_playlist)
+    duplicates = commands.remove_playlist_duplicates(bad_playlist)
 
-    assert processed_playlist == good_playlist
-
+    assert bad_playlist.read() == expected
+    assert duplicates == 1
 
 def test_does_not_modify_unduplicated_playlist():
-    mock_open('./bad_playlist.m3u8',   '''bad/duplicated/album\n
-                                          random/good/entry\n
-                                          bad/duplicated/album
-                                          ''')
-    mock_open('./good_playlist.m3u8', '''good/unduped/album\n
-                                          another/entry/here\n
-                                          can/we/have/another?
-                                          ''')
+    expected = ['good/unduped/playlist', 'another/good/entry', 'last/entry']
+    expected = '\n'.join(expected
+                         )
+    playlist = ['good/unduped/playlist', 'another/good/entry', 'last/entry']
+    playlist = '\n'.join(playlist)
+
+    mock_open('./bad_playlist.m3u8', playlist)
 
     bad_playlist = open('./bad_playlist.m3u8')
-    good_playlist = open('./good_playlist.m3u8')
 
-    processed_playlist = commands.remove_playlist_duplicates(bad_playlist)
+    duplicates = commands.remove_playlist_duplicates(bad_playlist)
 
-    assert processed_playlist == good_playlist
+    assert bad_playlist.read() == expected
+    assert duplicates == 0
