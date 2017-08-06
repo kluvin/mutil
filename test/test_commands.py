@@ -27,6 +27,7 @@ def test_correctly_removes_duplicates_when_present():
     assert bad_playlist.read() == expected
     assert duplicates == 1
 
+
 def test_does_not_modify_unduplicated_playlist():
     expected = ['good/unduped/playlist', 'another/good/entry', 'last/entry']
     expected = '\n'.join(expected
