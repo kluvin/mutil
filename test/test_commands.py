@@ -13,8 +13,8 @@ def mock_open(file, return_value):
 
 def test_correctly_removes_duplicates_when_present():
     expected = ['bad/duplicated/album', 'random/good/entry']
-    expected = '\n'.join(expected
-                         )
+    expected = '\n'.join(expected)
+
     duplicated = ['bad/duplicated/album', 'random/good/entry', 'bad/duplicated/album']
     duplicated = '\n'.join(duplicated)
 
@@ -30,8 +30,7 @@ def test_correctly_removes_duplicates_when_present():
 
 def test_does_not_modify_unduplicated_playlist():
     expected = ['good/unduped/playlist', 'another/good/entry', 'last/entry']
-    expected = '\n'.join(expected
-                         )
+    expected = '\n'.join(expected)
     playlist = ['good/unduped/playlist', 'another/good/entry', 'last/entry']
     playlist = '\n'.join(playlist)
 
