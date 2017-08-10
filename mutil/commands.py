@@ -1,3 +1,12 @@
+import argparse
+
+
+class RemovePlaylistDuplicatesAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        with open(values) as playlist:
+            return remove_playlist_duplicates(playlist)
+
+
 def remove_playlist_duplicates(playlist):
     """Removes entries in a given playlist.
     Args:
