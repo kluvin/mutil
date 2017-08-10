@@ -12,8 +12,8 @@ def init_parser():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-    '--remove-duplicates', '-rd',
-    action=commands.RemovePlaylistDuplicatesAction)
+      '--remove-duplicates', '-rd',
+      action=commands.RemovePlaylistDuplicatesAction)
 
     return parser
 
