@@ -1,3 +1,10 @@
+"""
+mutil.commands
+~~~~~~~~~~~~~~
+
+This module contains the implementations for the commands supported by mutil.
+"""
+
 import argparse
 
 
@@ -8,7 +15,7 @@ class RemovePlaylistDuplicatesAction(argparse.Action):
 
 
 def remove_playlist_duplicates(playlist):
-    """Removes entries in a given playlist.
+    """Remove entries in a given playlist.
     Args:
         playlist: A file containing a playlist to check.
 

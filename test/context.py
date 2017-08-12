@@ -1,3 +1,5 @@
+# Append mutil to PATH
+
 import os
 import sys
 
