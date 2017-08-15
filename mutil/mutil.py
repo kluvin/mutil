@@ -16,14 +16,19 @@ def main():
 
 
 def init_parser():
-    '''Initiate and return an `argparse.ArgumentParser
-    Returns: An `ArgumentParser``
-    '''
+    """Initiate argparse and return an `argparse.ArgumentParser`
+    Returns: An `ArgumentParser`
+    """
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
       '--remove-duplicates', '-rd',
       action=commands.RemovePlaylistDuplicatesAction)
+
+    parser.add_argument(
+      '--toggle-format', '-tf',
+      nargs=2,
+      action=commands.TogglePlaylistPathFormat)
 
     return parser
 

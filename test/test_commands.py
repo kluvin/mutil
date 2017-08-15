@@ -43,3 +43,25 @@ class TestRemovePlaylistDuplicates:
 
         assert duplicates == 0
         assert my_playlist.read() == expected_playlist
+
+
+class TestTogglePlaylistPathFormat:
+    def test_correctly_toggles_absolute_format_to_relative(self):
+        expected_playlist = 'album/track'
+        library_path = '/home/$USER/Music/\n'
+        mock_open('a_playlist', '/home/$USER/Music/album/track\n')
+        my_playlist = open('a_playlist')
+
+        commands.toggle_playlist_path_format(my_playlist, library_path)
+
+        assert my_playlist.read() == expected_playlist
+
+    def test_correctly_toggles_relative_format_to_absolute(self):
+        expected_playlist = '/home/$USER/Music/album/track'
+        library_path = '/home/$USER/Music/\n'
+        mock_open('a_playlist', 'album/track\n')
+        my_playlist = open('a_playlist')
+
+        commands.toggle_playlist_path_format(my_playlist, library_path)
+
+        assert my_playlist.read() == expected_playlist
