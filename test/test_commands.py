@@ -1,67 +1,61 @@
-import doubles
+import pyfakefs
+import pytest
 
 from mutil import commands
 
 
-def mock_open(file, return_value):
-    """Mock the open filesystem call
-    Args:
-        file: The file to mock; equivalent to first arg of open()
-        return_value: The value
-    """
-    from io import StringIO
-    import builtins
-
-    doubles.allow(builtins).open.with_args(file).and_return(StringIO(return_value))
+@pytest.fixture
+def playlist(fs):
+    """Open a fake file object"""
+    fs.CreateFile('playlist')
+    with open('playlist', 'r+') as playlist:
+        yield playlist
 
 
-def to_string(content):
+def list_to_string(content):
+    """Join list elements together to create continuous text"""
     return '\n'.join(content)
 
 
 class TestRemovePlaylistDuplicates:
-    def test_duplicated_playlist_behaves_as_expected(self):
-        my_playlist = to_string(['bad/duplicated/album', 'random/good/entry', 'bad/duplicated/album'])
-        expected_playlist = to_string(['bad/duplicated/album', 'random/good/entry'])
+    def test_duplicates_are_removed(self, playlist):
+        playlist.write(list_to_string(['a/b/c', 'a/b/c', '1/2/3']))
+        playlist.seek(0)
+        expected = list_to_string(['a/b/c', '1/2/3'])
 
-        mock_open('a_playlist.m3u8', my_playlist)
-
-        my_playlist = open('a_playlist.m3u8')
-        duplicates = commands.remove_playlist_duplicates(my_playlist)
+        duplicates = commands.remove_playlist_duplicates(playlist)
 
         assert duplicates == 1
-        assert my_playlist.read() == expected_playlist
+        assert playlist.read() == expected
 
-    def test_non_duplicated_playlist_behaves_as_expected(self):
-        my_playlist = to_string(['good/non-duped/album', 'another/good/entry', 'last/entry'])
-        expected_playlist = to_string(['good/non-duped/album', 'another/good/entry', 'last/entry'])
+    def test_non_duplicated_playlist_behaves_as_expected(self, playlist):
+        playlist.write(list_to_string(['a/b/c', '1/2/3']))
+        playlist.seek(0)
+        expected = list_to_string(['a/b/c', '1/2/3'])
 
-        mock_open('a_playlist.m3u8', my_playlist)
-
-        my_playlist = open('a_playlist.m3u8')
-        duplicates = commands.remove_playlist_duplicates(my_playlist)
+        duplicates = commands.remove_playlist_duplicates(playlist)
 
         assert duplicates == 0
-        assert my_playlist.read() == expected_playlist
+        assert playlist.read() == expected
 
 
 class TestTogglePlaylistPathFormat:
-    def test_correctly_toggles_absolute_format_to_relative(self):
+    def test_correctly_toggles_absolute_format_to_relative(self, playlist):
+        playlist.write('/home/$USER/Music/album/track\n')
+        playlist.seek(0)
         expected_playlist = 'album/track'
         library_path = '/home/$USER/Music/\n'
-        mock_open('a_playlist', '/home/$USER/Music/album/track\n')
-        my_playlist = open('a_playlist')
 
-        commands.toggle_playlist_path_format(my_playlist, library_path)
+        commands.toggle_playlist_path_format(playlist, library_path)
 
-        assert my_playlist.read() == expected_playlist
+        assert playlist.read() == expected_playlist
 
-    def test_correctly_toggles_relative_format_to_absolute(self):
+    def test_correctly_toggles_relative_format_to_absolute(self, playlist):
         expected_playlist = '/home/$USER/Music/album/track'
         library_path = '/home/$USER/Music/\n'
-        mock_open('a_playlist', 'album/track\n')
-        my_playlist = open('a_playlist')
+        playlist.write('album/track\n')
+        playlist.seek(0)
 
-        commands.toggle_playlist_path_format(my_playlist, library_path)
+        commands.toggle_playlist_path_format(playlist, library_path)
 
-        assert my_playlist.read() == expected_playlist
+        assert playlist.read() == expected_playlist
