@@ -14,12 +14,28 @@ class RemovePlaylistDuplicatesAction(argparse.Action):
             return remove_playlist_duplicates(playlist)
 
 
-class TogglePlaylistPathFormat(argparse.Action):
+class PlaylistPathsUseRelative(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         playlist_path = values[0]
         library_path = values[1]
         with open(playlist_path) as playlist:
-            return toggle_playlist_path_format(playlist, library_path)
+            return playlist_paths_use_relative(playlist, library_path)
+
+
+class PlaylistPathsUseAbsolute(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        playlist_path = values[0]
+        library_path = values[1]
+        with open(playlist_path) as playlist:
+            return playlist_paths_use_absolute(playlist, library_path)
+
+
+def overwrite_and_reset(file, content):
+    """Rewrite a file with `content` and then seek back to the start"""
+    file.seek(0)
+    file.truncate()
+    file.write(content)
+    file.seek(0)
 
 
 def remove_playlist_duplicates(playlist):
@@ -37,20 +53,17 @@ def remove_playlist_duplicates(playlist):
             duplicates += 1
         else:
             playlist_entries.append(entry)
+
     new_playlist = '\n'.join(playlist_entries)
 
     # Overwrite the old playlist
-    playlist.seek(0)
-    playlist.truncate()
-    playlist.write(new_playlist)
-    playlist.seek(0)
+    overwrite_and_reset(playlist, new_playlist)
 
     return duplicates
 
 
-def toggle_playlist_path_format(playlist, library_path):
-    """Modify the playlist format to use either relative or absolute
-       paths.
+def playlist_paths_use_relative(playlist, library_path):
+    """Modify the playlist format to use relative paths.
     Args:
         playlist: A file-object containing a playlist to check.
         library_path: The path in which your library resides,
@@ -60,18 +73,36 @@ def toggle_playlist_path_format(playlist, library_path):
     playlist_entries = []
     for entry in playlist:
         entry = entry.strip('\n')
-        # Is absolute, change to relative
-        if entry.startswith(library_path):
-            entry = entry.strip(library_path)
-        # Is relative, change to absolute
-        else:
-            entry = library_path + entry
+
+        # Change the format, relative
+        entry = entry.strip(library_path)
+
         playlist_entries.append(entry)
 
     new_playlist = '\n'.join(playlist_entries)
 
     # Overwrite the old playlist
-    playlist.seek(0)
-    playlist.truncate()
-    playlist.write(new_playlist)
-    playlist.seek(0)
+    overwrite_and_reset(playlist, new_playlist)
+
+
+def playlist_paths_use_absolute(playlist, library_path):
+    """Modify the playlist format to use absolute paths.
+    Args:
+        playlist: A file-object containing a playlist to check.
+        library_path: The path in which your library resides,
+                      must end in a '/' and cannot contain a newline
+    """
+    library_path = library_path.strip()
+    playlist_entries = []
+    for entry in playlist:
+        entry = entry.strip('\n')
+
+        # Change the format, absolute
+        entry = library_path + entry
+
+        playlist_entries.append(entry)
+
+    new_playlist = '\n'.join(playlist_entries)
+
+    # Overwrite the old playlist
+    overwrite_and_reset(playlist, new_playlist)

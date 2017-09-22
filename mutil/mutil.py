@@ -22,13 +22,18 @@ def init_parser():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-      '--remove-duplicates', '-rd',
+      '--remove-duplicates', '-d',
       action=commands.RemovePlaylistDuplicatesAction)
 
     parser.add_argument(
-      '--toggle-format', '-tf',
+      '--use-absolute-paths', '-A',
       nargs=2,
-      action=commands.TogglePlaylistPathFormat)
+      action=commands.PlaylistPathsUseAbsolute)
+
+    parser.add_argument(
+      '--use-relative-paths', '-R',
+      nargs=2,
+      action=commands.PlaylistPathsUseRelative)
 
     return parser
 

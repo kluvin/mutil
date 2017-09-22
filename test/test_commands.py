@@ -6,7 +6,10 @@ from mutil import commands
 
 @pytest.fixture
 def playlist(fs):
-    """Open a fake file object"""
+    """Open a fake file object
+    Args:
+        fs: A reference to the `pyfakefs` filesystem
+    """
     fs.CreateFile('playlist')
     with open('playlist', 'r+') as playlist:
         yield playlist
@@ -39,23 +42,24 @@ class TestRemovePlaylistDuplicates:
         assert playlist.read() == expected
 
 
-class TestTogglePlaylistPathFormat:
+class TestPlaylistPathsUseRelative:
     def test_correctly_toggles_absolute_format_to_relative(self, playlist):
         playlist.write('/home/$USER/Music/album/track\n')
         playlist.seek(0)
         expected_playlist = 'album/track'
         library_path = '/home/$USER/Music/\n'
 
-        commands.toggle_playlist_path_format(playlist, library_path)
+        commands.playlist_paths_use_relative(playlist, library_path)
 
         assert playlist.read() == expected_playlist
 
+class TestPlaylistPathsUseAbsolute:
     def test_correctly_toggles_relative_format_to_absolute(self, playlist):
         expected_playlist = '/home/$USER/Music/album/track'
         library_path = '/home/$USER/Music/\n'
         playlist.write('album/track\n')
         playlist.seek(0)
 
-        commands.toggle_playlist_path_format(playlist, library_path)
+        commands.playlist_paths_use_absolute(playlist, library_path)
 
         assert playlist.read() == expected_playlist
