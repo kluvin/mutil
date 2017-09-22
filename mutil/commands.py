@@ -7,6 +7,8 @@ This module contains the implementations for the commands supported by mutil.
 
 import argparse
 
+from mutil import util
+
 
 class RemovePlaylistDuplicatesAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -30,14 +32,6 @@ class PlaylistPathsUseAbsolute(argparse.Action):
             return playlist_paths_use_absolute(playlist, library_path)
 
 
-def overwrite_and_reset(file, content):
-    """Rewrite a file with `content` and then seek back to the start"""
-    file.seek(0)
-    file.truncate()
-    file.write(content)
-    file.seek(0)
-
-
 def remove_playlist_duplicates(playlist):
     """Remove entries in a given playlist.
     Args:
@@ -57,7 +51,7 @@ def remove_playlist_duplicates(playlist):
     new_playlist = '\n'.join(playlist_entries)
 
     # Overwrite the old playlist
-    overwrite_and_reset(playlist, new_playlist)
+    util.overwrite_and_reset(playlist, new_playlist)
 
     return duplicates
 
@@ -82,7 +76,7 @@ def playlist_paths_use_relative(playlist, library_path):
     new_playlist = '\n'.join(playlist_entries)
 
     # Overwrite the old playlist
-    overwrite_and_reset(playlist, new_playlist)
+    util.overwrite_and_reset(playlist, new_playlist)
 
 
 def playlist_paths_use_absolute(playlist, library_path):
@@ -105,4 +99,4 @@ def playlist_paths_use_absolute(playlist, library_path):
     new_playlist = '\n'.join(playlist_entries)
 
     # Overwrite the old playlist
-    overwrite_and_reset(playlist, new_playlist)
+    util.overwrite_and_reset(playlist, new_playlist)

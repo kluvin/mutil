@@ -1,7 +1,7 @@
 import pyfakefs
 import pytest
 
-from mutil import commands
+from mutil import commands, util
 
 
 @pytest.fixture
@@ -15,16 +15,11 @@ def playlist(fs):
         yield playlist
 
 
-def list_to_string(content):
-    """Join list elements together to create continuous text"""
-    return '\n'.join(content)
-
-
 class TestRemovePlaylistDuplicates:
     def test_duplicates_are_removed(self, playlist):
-        playlist.write(list_to_string(['a/b/c', 'a/b/c', '1/2/3']))
+        playlist.write(util.list_to_string(['a/b/c', 'a/b/c', '1/2/3']))
         playlist.seek(0)
-        expected = list_to_string(['a/b/c', '1/2/3'])
+        expected = util.list_to_string(['a/b/c', '1/2/3'])
 
         duplicates = commands.remove_playlist_duplicates(playlist)
 
@@ -32,9 +27,9 @@ class TestRemovePlaylistDuplicates:
         assert playlist.read() == expected
 
     def test_non_duplicated_playlist_behaves_as_expected(self, playlist):
-        playlist.write(list_to_string(['a/b/c', '1/2/3']))
+        playlist.write(util.list_to_string(['a/b/c', '1/2/3']))
         playlist.seek(0)
-        expected = list_to_string(['a/b/c', '1/2/3'])
+        expected = util.list_to_string(['a/b/c', '1/2/3'])
 
         duplicates = commands.remove_playlist_duplicates(playlist)
 
