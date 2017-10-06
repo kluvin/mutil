@@ -15,20 +15,12 @@ def remove_playlist_duplicates(playlist):
 
     Returns: The number of duplicates removed.
     """
-    playlist_entries = []
-    duplicates = 0
-    for entry in playlist:
-        entry = entry.strip('\n')
-        if entry in playlist_entries:
-            duplicates += 1
-        else:
-            playlist_entries.append(entry)
-
-    new_playlist = '\n'.join(playlist_entries)
-
-    # Overwrite the old playlist
+    old_playlist = [entry.strip('\n') for entry in playlist]
+    unique_entries = set(old_playlist)
+    new_playlist = '\n'.join(unique_entries)
     util.overwrite_and_reset(playlist, new_playlist)
 
+    duplicates = len(old_playlist) - len(unique_entries)
     return duplicates
 
 

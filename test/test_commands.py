@@ -19,12 +19,13 @@ class TestRemovePlaylistDuplicates:
     def test_duplicates_are_removed(self, playlist):
         playlist.write(util.list_to_string(['a/b/c', 'a/b/c', '1/2/3']))
         playlist.seek(0)
-        expected = util.list_to_string(['a/b/c', '1/2/3'])
+        expectation = ['a/b/c', '1/2/3']
 
         duplicates = commands.remove_playlist_duplicates(playlist)
 
+        reality = [entry.strip('\n') for entry in playlist]
         assert duplicates == 1
-        assert playlist.read() == expected
+        assert sorted(expectation) == sorted(reality)
 
     def test_non_duplicated_playlist_behaves_as_expected(self, playlist):
         playlist.write(util.list_to_string(['a/b/c', '1/2/3']))
