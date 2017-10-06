@@ -5,31 +5,7 @@ mutil.commands
 This module contains the implementations for the commands supported by mutil.
 """
 
-import argparse
-
 from mutil import util
-
-
-class RemovePlaylistDuplicatesAction(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        with open(values) as playlist:
-            return remove_playlist_duplicates(playlist)
-
-
-class PlaylistPathsUseRelative(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        playlist_path = values[0]
-        library_path = values[1]
-        with open(playlist_path) as playlist:
-            return playlist_paths_use_relative(playlist, library_path)
-
-
-class PlaylistPathsUseAbsolute(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        playlist_path = values[0]
-        library_path = values[1]
-        with open(playlist_path) as playlist:
-            return playlist_paths_use_absolute(playlist, library_path)
 
 
 def remove_playlist_duplicates(playlist):
