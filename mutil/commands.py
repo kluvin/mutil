@@ -43,7 +43,6 @@ def playlist_paths_use_relative(playlist, library_path):
 
     new_playlist = '\n'.join(playlist_entries)
 
-    # Overwrite the old playlist
     util.overwrite_and_reset(playlist, new_playlist)
 
 
@@ -66,5 +65,4 @@ def playlist_paths_use_absolute(playlist, library_path):
 
     new_playlist = '\n'.join(playlist_entries)
 
-    # Overwrite the old playlist
     util.overwrite_and_reset(playlist, new_playlist)
