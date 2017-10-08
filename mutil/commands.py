@@ -32,19 +32,9 @@ def playlist_paths_use_relative(playlist, library_path):
                       must end in a '/' and cannot contain a newline
     """
     library_path = library_path.strip()
-    playlist_entries = []
-    for entry in playlist:
-        entry = entry.strip('\n')
-
-        # Change the format, relative
-        entry = entry.strip(library_path)
-
-        playlist_entries.append(entry)
-
+    playlist_entries = [entry.strip('\n').strip(library_path) for entry in playlist]
     new_playlist = '\n'.join(playlist_entries)
-
     util.overwrite_and_reset(playlist, new_playlist)
-
 
 def playlist_paths_use_absolute(playlist, library_path):
     """Modify the playlist format to use absolute paths.
@@ -54,15 +44,6 @@ def playlist_paths_use_absolute(playlist, library_path):
                       must end in a '/' and cannot contain a newline
     """
     library_path = library_path.strip()
-    playlist_entries = []
-    for entry in playlist:
-        entry = entry.strip('\n')
-
-        # Change the format, absolute
-        entry = library_path + entry
-
-        playlist_entries.append(entry)
-
+    playlist_entries = [library_path + entry.strip('\n') for entry in playlist]
     new_playlist = '\n'.join(playlist_entries)
-
     util.overwrite_and_reset(playlist, new_playlist)
