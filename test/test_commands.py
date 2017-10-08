@@ -37,10 +37,42 @@ class TestRemovePlaylistDuplicates:
         assert duplicates == 0
         assert playlist.read() == expected
 
+    def test_empty_playlist(self, playlist):
+        playlist.write(util.list_to_string([]))
+        playlist.seek(0)
+        expectation = util.list_to_string([])
+
+        duplicates = commands.remove_playlist_duplicates(playlist)
+        reality = playlist.read()
+
+        assert duplicates == 0
+        assert sorted(expectation) == sorted(reality)
+
+    def test_invalid_playlist(self, playlist):
+        playlist.write(util.list_to_string(['my\nplaylist']))
+        playlist.seek(0)
+        expectation = util.list_to_string(['my\nplaylist'])
+
+        duplicates = commands.remove_playlist_duplicates(playlist)
+        reality = playlist.read()
+
+        assert duplicates == 0
+        assert sorted(expectation) == sorted(reality)
+
 
 class TestPlaylistPathsUseRelative:
     def test_correctly_toggles_absolute_format_to_relative(self, playlist):
         playlist.write('/home/$USER/Music/album/track\n')
+        playlist.seek(0)
+        expected_playlist = 'album/track'
+        library_path = '/home/$USER/Music/\n'
+
+        commands.playlist_paths_use_relative(playlist, library_path)
+
+        assert playlist.read() == expected_playlist
+
+    def test_relative_playlist_remains_relative(self, playlist):
+        playlist.write('album/track\n')
         playlist.seek(0)
         expected_playlist = 'album/track'
         library_path = '/home/$USER/Music/\n'
@@ -59,3 +91,14 @@ class TestPlaylistPathsUseAbsolute:
         commands.playlist_paths_use_absolute(playlist, library_path)
 
         assert playlist.read() == expected_playlist
+
+    # ToDo; Implement
+    # def test_absolute_playlist_remains_absolute(self, playlist):
+    #     expected_playlist = '/home/$USER/Music/album/track'
+    #     library_path = '/home/$USER/Music/\n'
+    #     playlist.write('/home/$USER/Music/album/track\n')
+    #     playlist.seek(0)
+    #
+    #     commands.playlist_paths_use_absolute(playlist, library_path)
+    #
+    #     assert playlist.read() == expected_playlist
