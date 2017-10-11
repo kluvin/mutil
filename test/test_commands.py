@@ -84,7 +84,7 @@ class TestPlaylistPathsUseRelative:
 class TestPlaylistPathsUseAbsolute:
     def test_correctly_toggles_relative_format_to_absolute(self, playlist):
         expected_playlist = '/home/$USER/Music/album/track'
-        library_path = '/home/$USER/Music/\n'
+        library_path = '/home/$USER/Music/'
         playlist.write('album/track\n')
         playlist.seek(0)
 
