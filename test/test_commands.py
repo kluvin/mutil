@@ -15,90 +15,49 @@ def playlist(fs):
         yield playlist
 
 
-class TestRemovePlaylistDuplicates:
-    def test_duplicates_are_removed(self, playlist):
-        playlist.write(util.list_to_string(['a/b/c', 'a/b/c', '1/2/3']))
+@pytest.mark.parametrize('test_input, expectation, duplicates_expected', [
+    ('a/b/c\na/b/c\n1/2/3', 'a/b/c\n1/2/3', 1),  # Duplicated
+    ('a/b/c\n1/2/3', 'a/b/c\n1/2/3', 0),         # Non-duplicated
+    ('', '', 0),                                 # Empty
+])
+def test_remove_playlist_duplicates(playlist, test_input, expectation, duplicates_expected):
+    playlist.write(test_input)
+    playlist.seek(0)
+
+    duplicates_found = commands.remove_playlist_duplicates(playlist)
+    reality = playlist.read()
+
+    assert duplicates_expected == duplicates_found
+    assert expectation == reality
+
+
+class TestPlaylistPathCommands:
+    library_path = '/home/$USER/Music'
+    absolute_path = '/home/$USER/Music/album/track'
+    relative_path = 'album/track'
+
+    @pytest.mark.parametrize('test_input, expectation', [
+        (absolute_path, relative_path),  # Absolute to relative
+        (relative_path, relative_path)   # Relative to relative
+    ])
+    def test_playlist_paths_use_relative(self, playlist, test_input, expectation):
+        playlist.write(test_input)
         playlist.seek(0)
-        expectation = ['a/b/c', '1/2/3']
 
-        duplicates = commands.remove_playlist_duplicates(playlist)
+        commands.playlist_paths_use_relative(playlist, self.library_path)
 
-        reality = [entry.strip('\n') for entry in playlist]
-        assert duplicates == 1
-        assert sorted(expectation) == sorted(reality)
-
-    def test_non_duplicated_playlist_behaves_as_expected(self, playlist):
-        playlist.write(util.list_to_string(['a/b/c', '1/2/3']))
-        playlist.seek(0)
-        expected = util.list_to_string(['a/b/c', '1/2/3'])
-
-        duplicates = commands.remove_playlist_duplicates(playlist)
-
-        assert duplicates == 0
-        assert playlist.read() == expected
-
-    def test_empty_playlist(self, playlist):
-        playlist.write(util.list_to_string([]))
-        playlist.seek(0)
-        expectation = util.list_to_string([])
-
-        duplicates = commands.remove_playlist_duplicates(playlist)
         reality = playlist.read()
+        assert expectation == reality
 
-        assert duplicates == 0
-        assert sorted(expectation) == sorted(reality)
-
-    def test_invalid_playlist(self, playlist):
-        playlist.write(util.list_to_string(['my\nplaylist']))
+    @pytest.mark.parametrize('test_input, expectation', [
+        (relative_path, absolute_path),  # Relative to absolute
+        (absolute_path, absolute_path)   # Absolute to absolute
+    ])
+    def test_playlist_paths_use_absolute(self, playlist, test_input, expectation):
+        playlist.write(test_input)
         playlist.seek(0)
-        expectation = util.list_to_string(['my\nplaylist'])
 
-        duplicates = commands.remove_playlist_duplicates(playlist)
+        commands.playlist_paths_use_absolute(playlist, self.library_path)
+
         reality = playlist.read()
-
-        assert duplicates == 0
-        assert sorted(expectation) == sorted(reality)
-
-
-class TestPlaylistPathsUseRelative:
-    def test_correctly_toggles_absolute_format_to_relative(self, playlist):
-        playlist.write('/home/$USER/Music/album/track\n')
-        playlist.seek(0)
-        expected_playlist = 'album/track'
-        library_path = '/home/$USER/Music/\n'
-
-        commands.playlist_paths_use_relative(playlist, library_path)
-
-        assert playlist.read() == expected_playlist
-
-    def test_relative_playlist_remains_relative(self, playlist):
-        playlist.write('album/track\n')
-        playlist.seek(0)
-        expected_playlist = 'album/track'
-        library_path = '/home/$USER/Music/\n'
-
-        commands.playlist_paths_use_relative(playlist, library_path)
-
-        assert playlist.read() == expected_playlist
-
-class TestPlaylistPathsUseAbsolute:
-    def test_correctly_toggles_relative_format_to_absolute(self, playlist):
-        expected_playlist = '/home/$USER/Music/album/track'
-        library_path = '/home/$USER/Music/'
-        playlist.write('album/track\n')
-        playlist.seek(0)
-
-        commands.playlist_paths_use_absolute(playlist, library_path)
-
-        assert playlist.read() == expected_playlist
-
-    # ToDo; Implement
-    # def test_absolute_playlist_remains_absolute(self, playlist):
-    #     expected_playlist = '/home/$USER/Music/album/track'
-    #     library_path = '/home/$USER/Music/\n'
-    #     playlist.write('/home/$USER/Music/album/track\n')
-    #     playlist.seek(0)
-    #
-    #     commands.playlist_paths_use_absolute(playlist, library_path)
-    #
-    #     assert playlist.read() == expected_playlist
+        assert expectation == reality
