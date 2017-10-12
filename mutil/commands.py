@@ -8,7 +8,7 @@ This module contains the implementations for the commands supported by mutil.
 from mutil import util
 
 
-def process_playlist(f, playlist, *args, **kwargs):
+def process_playlist(f, playlist):
     """Process a playlist
     Args:
         f: The function to apply to playlist entries
@@ -17,7 +17,7 @@ def process_playlist(f, playlist, *args, **kwargs):
     """
     formatted_playlist = [entry.strip('\n') for entry in playlist]
 
-    new_playlist = '\n'.join(f(entry, *args, **kwargs) for entry in formatted_playlist)
+    new_playlist = '\n'.join(f(entry) for entry in formatted_playlist)
     util.overwrite_and_reset(playlist, new_playlist)
 
 
