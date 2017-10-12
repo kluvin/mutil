@@ -15,7 +15,9 @@ def process_playlist(f, playlist, *args, **kwargs):
         playlist: The playlist to process
         *args, **kwargs: Additional arguments to be passed on to `f`
     """
-    new_playlist = '\n'.join(f(entry, *args, **kwargs) for entry in playlist)
+    formatted_playlist = [entry.strip('\n') for entry in playlist]
+
+    new_playlist = '\n'.join(f(entry, *args, **kwargs) for entry in formatted_playlist)
     util.overwrite_and_reset(playlist, new_playlist)
 
 
@@ -39,17 +41,15 @@ def playlist_paths_use_relative(playlist, library_path):
     """Modify the playlist format to use relative paths.
     Args:
         playlist: A file-object containing a playlist to check.
-        library_path: The path in which your library resides,
-                      must end in a '/' and cannot contain a newline
+        library_path: The path in which your library resides, must end in a '/'.
     """
-    process_playlist(lambda entry: entry.strip('\n').strip(library_path), playlist)
+    process_playlist(lambda entry: entry.strip(library_path), playlist)
 
 
 def playlist_paths_use_absolute(playlist, library_path):
     """Modify the playlist format to use absolute paths.
     Args:
         playlist: A file-object containing a playlist to check.
-        library_path: The path in which your library resides,
-                      must end in a '/' and cannot contain a newline
+        library_path: The path in which your library resides, must end in a '/'.
     """
-    process_playlist(lambda entry: library_path + entry.strip('\n'), playlist)
+    process_playlist(lambda entry: library_path + entry, playlist)
