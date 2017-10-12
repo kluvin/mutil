@@ -8,6 +8,17 @@ This module contains the implementations for the commands supported by mutil.
 from mutil import util
 
 
+def process_playlist(f, playlist, *args, **kwargs):
+    """Process a playlist
+    Args:
+        f: The function to apply to playlist entries
+        playlist: The playlist to process
+        *args, **kwargs: Additional arguments to be passed on to `f`
+    """
+    new_playlist = '\n'.join(f(entry, *args, **kwargs) for entry in playlist)
+    util.overwrite_and_reset(playlist, new_playlist)
+
+
 def remove_playlist_duplicates(playlist):
     """Remove entries in a given playlist.
     Args:
@@ -31,10 +42,8 @@ def playlist_paths_use_relative(playlist, library_path):
         library_path: The path in which your library resides,
                       must end in a '/' and cannot contain a newline
     """
-    library_path = library_path.strip()
-    playlist_entries = [entry.strip('\n').strip(library_path) for entry in playlist]
-    new_playlist = '\n'.join(playlist_entries)
-    util.overwrite_and_reset(playlist, new_playlist)
+    process_playlist(lambda entry: entry.strip('\n').strip(library_path), playlist)
+
 
 def playlist_paths_use_absolute(playlist, library_path):
     """Modify the playlist format to use absolute paths.
@@ -43,7 +52,4 @@ def playlist_paths_use_absolute(playlist, library_path):
         library_path: The path in which your library resides,
                       must end in a '/' and cannot contain a newline
     """
-    library_path = library_path.strip()
-    playlist_entries = [library_path + entry.strip('\n') for entry in playlist]
-    new_playlist = '\n'.join(playlist_entries)
-    util.overwrite_and_reset(playlist, new_playlist)
+    process_playlist(lambda entry: library_path + entry.strip('\n'), playlist)
