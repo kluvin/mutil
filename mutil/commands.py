@@ -41,7 +41,7 @@ def playlist_paths_use_relative(playlist, library_path):
     """Modify the playlist format to use relative paths.
     Args:
         playlist: A file-object containing a playlist to check.
-        library_path: The path in which your library resides, must end in a '/'.
+        library_path: The path in which your library resides
     """
     process_playlist(lambda entry: entry.strip(library_path), playlist)
 
