@@ -5,6 +5,8 @@ mutil.commands
 This module contains the implementations for the commands supported by mutil.
 """
 
+from collections import OrderedDict
+
 from mutil import util
 
 
@@ -29,7 +31,7 @@ def remove_playlist_duplicates(playlist):
     Returns: The number of duplicates removed.
     """
     old_playlist = [entry.strip('\n') for entry in playlist]
-    unique_entries = set(old_playlist)
+    unique_entries = list(OrderedDict.fromkeys(old_playlist))
     new_playlist = '\n'.join(unique_entries)
     util.overwrite_and_reset(playlist, new_playlist)
 
@@ -56,4 +58,4 @@ def playlist_paths_use_absolute(playlist, library_path):
     """
     if library_path[-1:] != '/':
         raise ValueError("library_path must include a trailing slash '/'")
-    process_playlist(lambda entry: library_path + entry, playlist)
+    process_playlist(lambda entry: library_path + entry if library_path not in entry else entry, playlist)
