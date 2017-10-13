@@ -51,5 +51,9 @@ def playlist_paths_use_absolute(playlist, library_path):
     Args:
         playlist: A file-object containing a playlist to check.
         library_path: The path in which your library resides, must end in a '/'.
+    Raises:
+        ValueError: On incorrect `library_path`
     """
+    if library_path[-1:] != '/':
+        raise ValueError("library_path must include a trailing slash '/'")
     process_playlist(lambda entry: library_path + entry, playlist)
