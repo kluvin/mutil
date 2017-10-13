@@ -1,7 +1,7 @@
 import pyfakefs
 import pytest
 
-from mutil import commands, util
+from mutil import commands
 
 
 @pytest.fixture
