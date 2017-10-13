@@ -41,7 +41,7 @@ class TestPlaylistPathCommands:
         (absolute_path, relative_path),  # Absolute to relative
         (relative_path, relative_path)   # Relative to relative
     ])
-    @pytest.mark.parametrize('library_path', [(library_path), (library_path_w_trailing_slash)])
+    @pytest.mark.parametrize('library_path', [library_path, library_path_w_trailing_slash])
     def test_playlist_paths_use_relative(self, playlist, test_input, expectation, library_path):
         playlist.write(test_input)
         playlist.seek(0)
