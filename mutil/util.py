@@ -15,5 +15,9 @@ def overwrite_and_reset(file, content):
     """Rewrite a file with `content` and then seek back to the start"""
     file.seek(0)
     file.truncate()
+    write_and_reset(file, content)
+
+
+def write_and_reset(file, content):
     file.write(content)
     file.seek(0)

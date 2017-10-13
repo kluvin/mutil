@@ -1,15 +1,16 @@
 import pyfakefs
 import pytest
 
-from mutil import commands
+from mutil import commands, util
 
 
 @pytest.fixture
 def playlist(fs):
+    # noinspection SpellCheckingInspection
     """Open a fake file object
-    Args:
-        fs: A reference to the `pyfakefs` filesystem
-    """
+        Args:
+            fs: A reference to the `pyfakefs` filesystem
+        """
     fs.CreateFile('playlist')
     with open('playlist', 'r+') as playlist:
         yield playlist
@@ -21,12 +22,11 @@ def playlist(fs):
     ('', '', 0),                                 # Empty
 ])
 def test_remove_playlist_duplicates(playlist, test_input, expectation, duplicates_expected):
-    playlist.write(test_input)
-    playlist.seek(0)
+    util.write_and_reset(playlist, test_input)
 
     duplicates_found = commands.remove_playlist_duplicates(playlist)
-    reality = playlist.read()
 
+    reality = playlist.read()
     assert duplicates_expected == duplicates_found
     assert expectation == reality
 
@@ -43,8 +43,7 @@ class TestPlaylistPathCommands:
     ])
     @pytest.mark.parametrize('library_path', [library_path, library_path_w_trailing_slash])
     def test_playlist_paths_use_relative(self, playlist, test_input, expectation, library_path):
-        playlist.write(test_input)
-        playlist.seek(0)
+        util.write_and_reset(playlist, test_input)
 
         commands.playlist_paths_use_relative(playlist, library_path)
 
@@ -56,8 +55,7 @@ class TestPlaylistPathCommands:
         (absolute_path, absolute_path)   # Absolute to absolute
     ])
     def test_playlist_paths_use_absolute(self, playlist, test_input, expectation):
-        playlist.write(test_input)
-        playlist.seek(0)
+        util.write_and_reset(playlist, test_input)
 
         commands.playlist_paths_use_absolute(playlist, self.library_path)
 
