@@ -32,8 +32,7 @@ def test_remove_playlist_duplicates(playlist, test_input, expectation, duplicate
 
 
 class TestPlaylistPathCommands:
-    library_path = '/home/$USER/Music'
-    library_path_w_slash = library_path + '/'
+    library_path = '/home/$USER/Music/'
     absolute_path = '/home/$USER/Music/album/track'
     relative_path = 'album/track'
 
@@ -41,12 +40,11 @@ class TestPlaylistPathCommands:
         (absolute_path, relative_path),  # Absolute to relative
         (relative_path, relative_path)   # Relative to relative
     ])
-    @pytest.mark.parametrize('library_path', [(library_path), (library_path_w_slash)])
-    def test_playlist_paths_use_relative(self, playlist, test_input, expectation, library_path):
+    def test_playlist_paths_use_relative(self, playlist, test_input, expectation):
         playlist.write(test_input)
         playlist.seek(0)
 
-        commands.playlist_paths_use_relative(playlist, library_path)
+        commands.playlist_paths_use_relative(playlist, self.library_path)
 
         reality = playlist.read()
         assert expectation == reality
@@ -55,12 +53,11 @@ class TestPlaylistPathCommands:
         (relative_path, absolute_path),  # Relative to absolute
         (absolute_path, absolute_path)   # Absolute to absolute
     ])
-    @pytest.mark.parametrize('library_path', [(library_path), (library_path_w_slash)])
-    def test_playlist_paths_use_absolute(self, playlist, test_input, expectation, library_path):
+    def test_playlist_paths_use_absolute(self, playlist, test_input, expectation):
         playlist.write(test_input)
         playlist.seek(0)
 
-        commands.playlist_paths_use_absolute(playlist, library_path)
+        commands.playlist_paths_use_absolute(playlist, self.library_path)
 
         reality = playlist.read()
         assert expectation == reality
