@@ -6,20 +6,21 @@ This module implements the logic for enabling command-line usage.
 """
 
 
+
 import argparse
 
 from mutil import commands
 
 
-def main():
+def main(args=None):
     parser = init_parser()
-    parser.parse_args()
+    parser.parse_args(args)
 
 
 def make_custom_action(command_type, func):
     class CustomAction(argparse.Action):
         def __call__(self, parser, namespace, values, option_string=None):
-            return command_type(func, *values)
+            return command_type(func, values)
     return CustomAction
 
 
@@ -51,4 +52,4 @@ def init_parser():
 
 
 if __name__ == '__main__':
-    main()
+    main('-A ../playlist.txt /my/path/'.split(' '))
