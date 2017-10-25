@@ -1,9 +1,9 @@
 import argparse
 
-from mutil import mutil
+from mutil import api
 
 
 def test_parser_initiates():
-    parser = mutil.init_parser()
+    parser = api.init_parser()
 
     assert isinstance(parser, argparse.ArgumentParser)

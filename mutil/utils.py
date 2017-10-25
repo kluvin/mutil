@@ -1,3 +1,10 @@
+"""
+mutil.utils
+~~~~~~~~~~~
+
+This module contains procedures used in mutil that are probably useful for external consumption.
+"""
+
 def process_playlist(f, playlist):
     """Process a playlist
     Args:

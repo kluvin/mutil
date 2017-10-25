@@ -9,7 +9,7 @@ This module contains the implementations for the commands supported by mutil.
 
 from collections import OrderedDict
 
-from mutil import util
+from mutil import utils
 
 
 def remove_playlist_duplicates(playlist):
@@ -23,7 +23,7 @@ def remove_playlist_duplicates(playlist):
         old_playlist = [entry.strip('\n') for entry in playlist]
         unique_entries = list(OrderedDict.fromkeys(old_playlist))
         new_playlist = '\n'.join(unique_entries)
-        util.overwrite_and_reset(playlist, new_playlist)
+        utils.overwrite_and_reset(playlist, new_playlist)
 
         duplicates = len(old_playlist) - len(unique_entries)
         return duplicates
@@ -36,7 +36,7 @@ def playlist_paths_use_relative(playlist, library_path):
         library_path: The path in which your library resides
     """
     with open(playlist) as playlist:
-        util.process_playlist(lambda entry: entry.strip(library_path), playlist)
+        utils.process_playlist(lambda entry: entry.strip(library_path), playlist)
 
 
 def playlist_paths_use_absolute(playlist, library_path):
@@ -50,4 +50,4 @@ def playlist_paths_use_absolute(playlist, library_path):
     with open(playlist) as playlist:
         if library_path[-1:] != '/':
             raise ValueError("library_path must include a trailing slash '/'")
-        util.process_playlist(lambda entry: library_path + entry if library_path not in entry else entry, playlist)
+        utils.process_playlist(lambda entry: library_path + entry if library_path not in entry else entry, playlist)

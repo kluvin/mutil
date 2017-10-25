@@ -1,5 +1,5 @@
 """
-mutil.mutil
+mutil.api
 ~~~~~~~~~~~
 
 This module implements the logic for enabling command-line usage.

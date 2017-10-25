@@ -1,7 +1,7 @@
 import pyfakefs
 import pytest
 
-from mutil import commands, util
+from mutil import commands, utils
 
 
 @pytest.fixture
@@ -22,7 +22,7 @@ def playlist(fs):
     ('', '', 0),                                 # Empty
 ])
 def test_remove_playlist_duplicates(playlist, test_input, expectation, duplicates_expected):
-    util.write_and_reset(playlist, test_input)
+    utils.write_and_reset(playlist, test_input)
 
     duplicates_found = commands.remove_playlist_duplicates(playlist)
 
@@ -43,7 +43,7 @@ class TestPlaylistPathCommands:
     ])
     @pytest.mark.parametrize('library_path', [library_path, library_path_w_trailing_slash])
     def test_playlist_paths_use_relative(self, playlist, test_input, expectation, library_path):
-        util.write_and_reset(playlist, test_input)
+        utils.write_and_reset(playlist, test_input)
 
         commands.playlist_paths_use_relative(playlist, library_path)
 
@@ -55,7 +55,7 @@ class TestPlaylistPathCommands:
         (absolute_path, absolute_path)   # Absolute to absolute
     ])
     def test_playlist_paths_use_absolute(self, playlist, test_input, expectation):
-        util.write_and_reset(playlist, test_input)
+        utils.write_and_reset(playlist, test_input)
 
         commands.playlist_paths_use_absolute(playlist, self.library_path)
 
