@@ -5,8 +5,6 @@ mutil.api
 This module implements the logic for enabling command-line usage.
 """
 
-# ToDo; While unit-tests are passing the program can't be invoked from the command-line.
-#  Something to do with imports
 
 import argparse
 
@@ -18,10 +16,10 @@ def main():
     parser.parse_args()
 
 
-def make_custom_action(command):
+def make_custom_action(command_type, func):
     class CustomAction(argparse.Action):
         def __call__(self, parser, namespace, values, option_string=None):
-            return command(*values)
+            return command_type(func, *values)
     return CustomAction
 
 
@@ -34,22 +32,19 @@ def init_parser():
     parser.add_argument(
       '--remove-duplicates', '-d',
       nargs=1,
-      action=make_custom_action(
-        commands.remove_playlist_duplicates)
+      action=make_custom_action(commands.playlist_command, commands.remove_playlist_duplicates)
     )
 
     parser.add_argument(
       '--use-absolute-paths', '-A',
       nargs=2,
-      action=make_custom_action(
-        commands.playlist_paths_use_absolute)
+      action=make_custom_action(commands.playlist_command, commands.playlist_paths_use_absolute)
     )
 
     parser.add_argument(
       '--use-relative-paths', '-R',
       nargs=2,
-      action=make_custom_action(
-        commands.playlist_paths_use_relative)
+      action=make_custom_action(commands.playlist_command, commands.playlist_paths_use_relative)
     )
 
     return parser
